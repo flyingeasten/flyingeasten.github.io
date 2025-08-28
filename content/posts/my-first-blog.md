@@ -2,6 +2,7 @@
 date = '2025-08-28T11:54:17+08:00'
 draft = false
 title = '我的第一篇Hugo博客'
+weight = 2
 +++
 
 博客启航
