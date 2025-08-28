@@ -1,0 +1,99 @@
+/* ===== 全局侧边栏样式 ===== */
+/* 所有笔记名称 - 确保深色模式下可见 */
+/.nav-file-title-content,
+/.search-result-file-title {
+/  font-weight: 600 !important;
+/  color: #333 !important; /* 深灰色，确保浅色模式下可见 */
+/  opacity: 1 !important;
+/}
+
+/* 深色模式笔记名称 - 改为浅灰色 */
+/.theme-dark .nav-file-title-content,
+/.theme-dark .search-result-file-title {
+/  color: #d0d0d0 !important; /* 亮灰色，深色模式下清晰可见 */
+/}
+
+/* 所有文件夹名称 - 减小字体大小 */
+/.nav-folder-title .nav-folder-title-content {
+ / font-size: 12px !important; /* 再减小一号 */
+ / font-weight: 600 !important;
+ / color: #444 !important;
+ / padding: 2px 5px !important;
+ / border-radius: 3px !important;
+/}
+
+/* ===== 悬停效果 ===== */
+/* 文件夹悬停 */
+.nav-folder-title:hover .nav-folder-title-content {
+  background-color: rgba(100, 100, 100, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* 笔记悬停 */
+.nav-file-title:hover .nav-file-title-content {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s ease !important;
+}
+
+.theme-dark .nav-file-title:hover .nav-file-title-content {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* ===== 标题样式 ===== */
+.cm-header-1, .markdown-preview-section h1 {
+  color: #e53935 !important; /* 红色 */
+  font-size: 1.8em !important;
+}
+.cm-header-2, .markdown-preview-section h2 {
+  color: #d88015 !important; /* 橙色 */
+  font-size: 1.5em !important;
+}
+.cm-header-3, .markdown-preview-section h3 {
+  color: #8e24aa !important; /* 紫色 */
+  font-size: 1.4em !important;
+}
+.cm-header-4, .markdown-preview-section h4 {
+  color: #62b6cb !important; /* 蓝色 */
+  font-size: 1.3em !important;
+}
+.cm-header-5, .markdown-preview-section h5 {
+  color:  #ebc908 !important; /* 黄色 */
+  font-size: 1.2em !important;
+}
+.cm-header-6, .markdown-preview-section h6 {
+  color: #43a047 !important; /* 绿色 */
+  font-size: 1.1em !important;
+}
+/* 粗体文本 */
+.cm-strong, strong {
+  color: #d81b60 !important; /* 粉色 */
+  font-weight: bold !important;
+}
+
+/* ===== 全局侧边栏样式 ===== */
+/* 只保留选中时字体变大，移除颜色和加粗 */
+
+.nav-folder-title.is-active .nav-folder-title-content,
+.nav-folder-title:active .nav-folder-title-content,
+.nav-folder-title:focus .nav-folder-title-content {
+  font-size: 14px !important; /* 选中时动态放大 */
+  background-color: rgba(100, 100, 100, 0.18) !important;
+  transition: font-size 0.2s cubic-bezier(.4,2,.6,1), background-color 0.2s;
+}
+
+.nav-file-title.is-active .nav-file-title-content,
+.nav-file-title:active .nav-file-title-content,
+.nav-file-title:focus .nav-file-title-content {
+  font-size: 15px !important;
+  /background-color: #d0ebff !important;
+  color: #f56905f1 !important;
+  transition: font-size 0.2s cubic-bezier(.4,2,.6,1), background-color 0.2s, color 0.2s;
+}
+.nav-file-title-content {
+  font-size: 13px !important; /* 再减小一号 */
+  font-weight: normal !important;
+  color: inherit !important;
+}
+.theme-dark .nav-file-title-content {
+  color: #d0d0d0 !important;
+}
