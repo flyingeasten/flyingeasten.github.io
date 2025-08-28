@@ -26,67 +26,27 @@ jobs:
           submodules: 'recursive'  # 确保主题等子模块能正常拉取
           fetch-depth: 0           # 拉取完整历史，避免构建问题
 
-      # 步骤2：同步 BlogPosts 仓库文章（优化版本）
-      - name: 同步 BlogPosts 仓库文章
-        env:
-          BLOG_TOKEN: ${{ secrets.BLOG_POSTS_TOKEN }}
-          POSTS_DIR: "content/posts"
-          REPO_URL: "https://flyingeasten:${{ secrets.BLOG_POSTS_TOKEN }}@github.com/flyingeasten/BlogPosts.git"
-        run: |
-          set -euo pipefail  # 启用严格错误检查
-          
-          # 确保content目录存在
-          echo "确保content目录存在..."
-          mkdir -p content
-          
-          # 检查posts目录是否已存在并是git仓库
-          if [ -d "$POSTS_DIR/.git" ]; then
-            echo "更新现有文章仓库..."
-            cd "$POSTS_DIR"
-            git config --global user.email "actions@github.com"
-            git config --global user.name "GitHub Actions"
-            git pull --rebase origin main || {
-              echo "拉取失败，尝试手动合并..."
-              git rebase --abort
-              git pull origin main
-            }
-            cd -
-          else
-            echo "首次克隆文章仓库..."
-            if ! git clone "$REPO_URL" "$POSTS_DIR"; then
-              echo "错误：克隆仓库失败"
-              exit 1
-            fi
-          fi
-          
-          # 验证同步结果
-          if [ ! -d "$POSTS_DIR" ]; then
-            echo "错误：文章目录同步失败"
-            exit 1
-          fi
-          echo "文章仓库同步完成"
-
-      # 步骤3：安装 Hugo 扩展版
+      # 步骤2：安装 Hugo 扩展版
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
           extended: true
 
-      # 步骤4：构建静态博客页面（已移除--verbose标志）
+      # 步骤3：构建静态博客页面
       - name: 构建博客
         run: |
           set -euo pipefail
           echo "使用Hugo版本："
           hugo version
           echo "开始构建博客..."
-          if ! hugo --minify; then  # 这里移除了--verbose标志
+          if ! hugo --minify; then
             echo "错误：博客构建失败"
             exit 1
           fi
           echo "博客构建完成"
 
-      # 步骤5：部署到 GitHub Pages
+      # 步骤4：部署到 GitHub Pages
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         id: deployment
@@ -99,7 +59,7 @@ jobs:
             Deploy from GitHub Actions: ${{ github.sha }}
             Triggered by commit ${{ github.sha }} in ${{ github.repository }}
 
-      # 步骤6：输出部署结果
+      # 步骤5：输出部署结果
       - name: 显示部署信息
         run: |
           echo "博客已成功部署到: ${{ steps.deployment.outputs.page_url }}"
