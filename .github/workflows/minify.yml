@@ -1,0 +1,25 @@
+name: Minify & Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install -g html-minifier-terser csso-cli uglify-js
+      - run: |
+          html-minifier-terser --collapse-whitespace --remove-comments -o index.min.html index.html
+          csso css/style.css --output css/style.min.css
+          uglifyjs js/app.js -o js/app.min.js
+      - run: |
+          mv index.min.html index.html
+          mv css/style.min.css css/style.css
+          mv js/app.min.js js/app.js
+      - uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
