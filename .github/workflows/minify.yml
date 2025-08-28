@@ -1,25 +1,38 @@
+# .github/workflows/minify.yml
 name: Minify & Deploy
 on:
   push:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: npm install -g html-minifier-terser csso-cli uglify-js
-      - run: |
-          html-minifier-terser --collapse-whitespace --remove-comments -o index.min.html index.html
-          csso css/style.css --output css/style.min.css
-          uglifyjs js/app.js -o js/app.min.js
-      - run: |
-          mv index.min.html index.html
-          mv css/style.min.css css/style.css
-          mv js/app.min.js js/app.js
-      - uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install minifiers
+        run: npm install -g html-minifier-terser csso-cli uglify-js
+
+      - name: Minify all HTML/CSS/JS
+        run: |
+          # 压缩所有 .html
+          find . -name "*.html" -not -path "./.*" -exec html-minifier-terser \
+            --collapse-whitespace --remove-comments --minify-css --minify-js \
+            -o {} -- {} \;
+
+          # 压缩所有 .css
+          find . -name "*.css"  -not -path "./.*" -exec csso {} --output {} \;
+
+          # 压缩所有 .js
+          find . -name "*.js"   -not -path "./.*" -exec uglifyjs {} -o {} \;
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: .
