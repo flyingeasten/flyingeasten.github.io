@@ -1,0 +1,55 @@
+name: 部署博客到 GitHub Pages
+
+# 触发条件：主仓库推送、手动触发
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 权限设置（部署 GitHub Pages 必需）
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤1：拉取主仓库（flyingeasten.github.io）代码
+      - name: 拉取主仓库代码
+        uses: actions/checkout@v4
+
+      # 步骤2：同步 BlogPosts 仓库文章（核心修复部分）
+      - name: 同步 BlogPosts 仓库文章
+        run: |
+          # 检查 content/posts 目录是否存在
+          if [ -d "content/posts" ]; then
+            # 目录存在：进入目录拉取最新内容
+            echo "检测到 content/posts 已存在，拉取最新更新..."
+            cd content/posts
+            git pull origin main
+            cd ../../
+          else
+            # 目录不存在：克隆仓库到指定目录
+            echo "未检测到 content/posts，首次克隆 BlogPosts 仓库..."
+            git clone https://${{ secrets.BLOG_POSTS_TOKEN }}@github.com/flyingeasten/BlogPosts.git content/posts
+          fi
+
+      # 步骤3：安装 Hugo 扩展版（LoveIt 主题依赖）
+      - name: 安装 Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      # 步骤4：构建静态博客页面
+      - name: 构建博客
+        run: hugo --minify  # 压缩 HTML/CSS/JS，提升加载速度
+
+      # 步骤5：部署到 GitHub Pages
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public  # Hugo 构建输出目录
